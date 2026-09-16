@@ -1,0 +1,16 @@
+{
+  "name": "snowbound-trading-post",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "test": "node --test tests/ 2>/dev/null || node --test",
+    "lint": "eslint src *.js",
+    "typecheck": "tsc -p jsconfig.json"
+  },
+  "dependencies": { "three": "^0.180.0" },
+  "devDependencies": { "vite": "^7.1.5", "eslint": "^9.35.0", "@eslint/js": "^9.35.0", "globals": "^16.3.0", "typescript": "^5.9.2", "@types/three": "^0.180.0", "@types/node": "^24.3.1" }
+}
