@@ -1,7 +1,19 @@
+/**
+ * @typedef {Object} SellingZoneOptions
+ * @property {number} [interval]
+ * @property {Object<string, number>} [prices]
+ * @property {((item: {type: string, price: number}, price: number) => void)|undefined} [onSale]
+ */
+
 export class SellingZone {
   #cooldown = 0;
 
-  constructor(inventory, state, { interval = 0.18, prices = { wood: 5, cookedMeat: 10 }, onSale = () => {} } = {}) {
+  /**
+   * @param {object} inventory
+   * @param {object} state
+   * @param {SellingZoneOptions} [options]
+   */
+  constructor(inventory, state, { interval = 0.18, prices = { wood: 5, cookedMeat: 10 }, onSale } = {}) {
     if (!Number.isFinite(interval) || interval <= 0) throw new RangeError('Interval must be finite and positive');
     if (typeof onSale !== 'function') throw new TypeError('onSale must be a function');
     this.inventory = inventory;

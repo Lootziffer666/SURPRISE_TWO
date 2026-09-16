@@ -1,5 +1,3 @@
-import { Group } from 'three';
-
 const COLLECTION_RADIUS = 1.05;
 
 export class ResourceManager {

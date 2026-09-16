@@ -1,7 +1,21 @@
 import { Box3, Box3Helper, Color, Vector3 } from 'three';
 
+/**
+ * @typedef {Object} TriggerZoneOptions
+ * @property {Vector3} [center]
+ * @property {Vector3} [size]
+ * @property {((dt: number, zone: TriggerZone) => void)|undefined} [onEnter]
+ * @property {((dt: number, zone: TriggerZone) => void)|undefined} [onStay]
+ * @property {((dt: number, zone: TriggerZone) => void)|undefined} [onExit]
+ * @property {boolean} [debug]
+ * @property {import('three').Object3D|null} [scene]
+ */
+
 export class TriggerZone {
-  constructor({ center = new Vector3(), size = new Vector3(1, 1, 1), onEnter = () => {}, onStay = () => {}, onExit = () => {}, debug = false, scene = null } = {}) {
+  /**
+   * @param {TriggerZoneOptions} [options]
+   */
+  constructor({ center = new Vector3(), size = new Vector3(1, 1, 1), onEnter, onStay, onExit, debug = false, scene = null } = {}) {
     if (typeof onEnter !== 'function' || typeof onStay !== 'function' || typeof onExit !== 'function') {
       throw new TypeError('Trigger callbacks must be functions');
     }
