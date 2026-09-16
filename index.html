@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#cadde5" />
+    <meta name="description" content="A little winter escape. Gather, cook and trade your way to a new frontier." />
+    <title>Snowbound — A little winter adventure</title>
+  </head>
+  <body>
+    <canvas id="game-canvas" aria-label="Snowbound isometric resource game. Move with WASD, arrow keys, or tap the snow."></canvas>
+    <div id="hud">
+      <header class="topbar">
+        <div class="brand"><span class="brand-mark">S</span><div><h1>snowbound<span>.</span></h1><p>A LITTLE WINTER ADVENTURE</p></div></div>
+        <div class="top-right"><span class="live-badge"><i></i> YOUR OUTPOST</span><div id="cash-panel" aria-live="polite" aria-label="Cash balance"><span class="coin">$</span><div><small>YOUR EARNINGS</small><strong id="cash-amount">$0</strong></div></div></div>
+      </header>
+      <aside class="quest-card">
+        <div class="eyebrow"><span>01</span> THE NEXT CHAPTER</div>
+        <h2 id="quest-title">A new frontier</h2>
+        <p id="quest-description">A quiet fishing pond awaits.<br>Earn $200 to open the north gate.</p>
+        <div class="quest-progress"><span id="quest-fill"></span></div>
+        <div class="quest-total"><span id="quest-status">Build your little fortune</span><strong id="quest-amount">$0 / $200</strong></div>
+        <div class="quest-steps"><div><b>1</b> Gather wood & raw meat</div><div><b>2</b> Cook meat at the campfire</div><div><b>3</b> Sell at the trading post</div></div>
+      </aside>
+      <div id="activity" role="status" hidden><span class="activity-dot"></span><span id="activity-text"></span><div class="activity-progress"><span id="activity-fill"></span></div></div>
+      <footer class="bottom-bar"><div class="location"><span class="location-dot"></span><div><strong id="location-name">Pinewood outpost</strong><small>DAY 01 · THE SNOWY FRONTIER</small></div></div><div class="inventory-panel"><span class="bag-label">BACKPACK</span><span><i class="resource-icon wood"></i><b id="count-wood">0</b><small>Wood</small></span><span><i class="resource-icon raw"></i><b id="count-rawMeat">0</b><small>Raw</small></span><span><i class="resource-icon cooked"></i><b id="count-cookedMeat">0</b><small>Cooked</small></span></div><button id="help-button" aria-label="Show controls" aria-expanded="false">?</button></footer>
+      <div id="hint"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd><span>to move</span><i></i><span>or click / tap the snow</span></div>
+      <section id="help-panel" hidden><h2>Make yourself at home.</h2><p>Move with WASD, arrow keys, or tap a destination. Walk over logs and red meat to collect them.</p><p>Stand in the orange campfire ring to cook. Stand at the green trading post to sell wood ($5) and cooked meat ($10).</p><p>With $200, step into the north gate's gold ring. Supplies regrow, so your adventure never runs out.</p><button id="close-help">Back to the snow</button></section>
+    </div>
+    <div id="world-labels" aria-hidden="true"></div>
+    <div id="toast-layer" role="status" aria-live="polite"></div>
+    <div id="error-panel" role="alert" hidden></div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
