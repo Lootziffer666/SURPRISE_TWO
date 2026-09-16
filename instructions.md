@@ -605,4 +605,4 @@ print the file path as a heading
 provide the entire file in a code block
 do not replace repeat
 
-USE THE PROVIDED SKILLS IN CLAUDE-CODE GAME-STUDIO-ZIP
+USE THE PROVIDED SKILLS IN CLAUDE-CODE-GAME-STUDIOS.ZIP IN ROOT.
