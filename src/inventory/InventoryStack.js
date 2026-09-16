@@ -1,4 +1,4 @@
-import { Box3, Group } from 'three';
+import { Box3, Group, Vector3 } from 'three';
 
 export class InventoryStack {
   static sequence = 0;
@@ -7,7 +7,7 @@ export class InventoryStack {
   #height = 0;
   #listeners = new Set();
   #bounds = new Box3();
-  #size = new Box3().getSize(new (class {})()) && null;
+  #size = new Vector3();
 
   constructor(player, factory, { gap = 0.04 } = {}) {
     if (!Number.isFinite(gap) || gap < 0) throw new RangeError('Gap must be finite and nonnegative');
