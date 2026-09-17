@@ -15,7 +15,7 @@ export class TriggerZone {
   /**
    * @param {TriggerZoneOptions} [options]
    */
-  constructor({ center = new Vector3(), size = new Vector3(1, 1, 1), onEnter, onStay, onExit, debug = false, scene = null } = {}) {
+  constructor({ center = new Vector3(), size = new Vector3(1, 1, 1), onEnter = () => {}, onStay = () => {}, onExit = () => {}, debug = false, scene = null } = {}) {
     if (typeof onEnter !== 'function' || typeof onStay !== 'function' || typeof onExit !== 'function') {
       throw new TypeError('Trigger callbacks must be functions');
     }
