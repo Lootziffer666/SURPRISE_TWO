@@ -1,0 +1,181 @@
+name: Presentation visuals
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/visual-package.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Expose runtime to capture harness
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('src/main.js')
+          s = p.read_text()
+          needle = "  game = new GameManager(canvas);\n  game.start();"
+          replacement = "  game = new GameManager(canvas);\n  window.__snowResourceGame = game;\n  game.start();"
+          if needle not in s:
+              raise SystemExit('GameManager creation pattern not found')
+          p.write_text(s.replace(needle, replacement, 1))
+          PY
+
+      - name: Build and install browser
+        run: |
+          set -euo pipefail
+          npm install --no-audit --no-fund --package-lock=false
+          npm run build
+          npm install --no-save --package-lock=false playwright@1.55.0
+          npx playwright install --with-deps chromium
+          python3 -m pip install --quiet --break-system-packages pillow
+
+      - name: Start preview
+        run: |
+          set -euo pipefail
+          nohup npm run preview -- --host 127.0.0.1 --port 4173 >/tmp/preview.log 2>&1 &
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:4173/ >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/preview.log
+          exit 1
+
+      - name: Capture meaningful game states
+        run: |
+          set -euo pipefail
+          mkdir -p docs/visuals
+          cat > visual-capture.mjs <<'JS'
+          import { chromium } from './node_modules/playwright/index.mjs';
+          import fs from 'node:fs';
+
+          const browser = await chromium.launch({ headless: true, args: ['--use-gl=swiftshader','--enable-unsafe-swiftshader'] });
+          const page = await browser.newPage({ viewport: { width: 1365, height: 768 } });
+          const errors = [];
+          const warnings = [];
+          page.on('console', m => { if (m.type() === 'error') errors.push(m.text()); if (m.type() === 'warning') warnings.push(m.text()); });
+          page.on('pageerror', e => errors.push(String(e)));
+
+          await page.goto('http://127.0.0.1:4173/', { waitUntil: 'networkidle' });
+          await page.waitForFunction(() => !!window.__snowResourceGame);
+          await page.waitForTimeout(1000);
+          await page.screenshot({ path: 'docs/visuals/00-title-hero.png' });
+
+          const collected = await page.evaluate(() => {
+            const g = window.__snowResourceGame;
+            const result = [];
+            for (const wanted of ['wood', 'rawMeat']) {
+              const record = g.resources.records.find(r => r.active && r.type === wanted);
+              if (!record) continue;
+              g.player.position.copy(record.mesh.position);
+              g.resources.update(0.016, g.player.position);
+              if (!record.active) result.push(wanted);
+            }
+            return result;
+          });
+          if (collected.length < 2) throw new Error(`Could not collect representative resources: ${collected.join(',')}`);
+          await page.keyboard.down('KeyD');
+          await page.waitForTimeout(650);
+          await page.keyboard.up('KeyD');
+          await page.waitForTimeout(350);
+          await page.screenshot({ path: 'docs/visuals/01-gameplay.png' });
+
+          await page.click('#help-button');
+          await page.waitForTimeout(250);
+          await page.screenshot({ path: 'docs/visuals/02-ui-menu.png' });
+          await page.click('#close-help');
+
+          await page.evaluate(() => {
+            const g = window.__snowResourceGame;
+            g.state.addCash(200);
+            if (!g.map.tryUnlock()) throw new Error('Map refused valid $200 unlock');
+          });
+          await page.waitForFunction(() => window.__snowResourceGame.map.expansion.unlocked === true, null, { timeout: 5000 });
+          await page.evaluate(() => {
+            const g = window.__snowResourceGame;
+            g.player.position.set(0, 0, -16);
+          });
+          await page.waitForTimeout(750);
+          await page.screenshot({ path: 'docs/visuals/03-special-mechanic.png' });
+
+          const state = await page.evaluate(() => {
+            const g = window.__snowResourceGame;
+            return {
+              title: document.title,
+              cash: g.state.cash,
+              expansionUnlocked: g.map.expansion.unlocked,
+              inventory: ['wood','rawMeat','cookedMeat'].reduce((out, type) => ({...out, [type]: g.inventory.count(type)}), {}),
+              location: document.querySelector('#location-name')?.textContent || ''
+            };
+          });
+
+          fs.writeFileSync('docs/visuals/visual-report.json', JSON.stringify({
+            testedAt: new Date().toISOString(),
+            states: {
+              '00-title-hero.png': 'Branded starting view with quest and outpost HUD',
+              '01-gameplay.png': 'Actual ResourceManager collection plus player movement',
+              '02-ui-menu.png': 'Built-in help / controls panel',
+              '03-special-mechanic.png': 'The $200 north-gate expansion unlocked through MapManager and entered'
+            },
+            state,
+            consoleErrors: errors,
+            consoleWarnings: warnings
+          }, null, 2));
+
+          await browser.close();
+          if (errors.length) process.exit(1);
+          if (!state.expansionUnlocked) throw new Error('Expansion did not unlock during visual capture');
+          JS
+          node visual-capture.mjs
+          rm visual-capture.mjs
+
+      - name: Build contact sheet
+        run: |
+          python3 - <<'PY'
+          from PIL import Image, ImageDraw
+          from pathlib import Path
+          items = [
+              ('00-title-hero.png', 'TITLE / HERO'),
+              ('01-gameplay.png', 'GAMEPLAY'),
+              ('02-ui-menu.png', 'UI / MENU'),
+              ('03-special-mechanic.png', 'SPECIAL MECHANIC'),
+          ]
+          root = Path('docs/visuals')
+          opened = [Image.open(root / name).convert('RGB') for name, _ in items]
+          w, h = opened[0].size
+          label_h = 44
+          sheet = Image.new('RGB', (w * 2, (h + label_h) * 2), 'black')
+          draw = ImageDraw.Draw(sheet)
+          for i, (image, (_, label)) in enumerate(zip(opened, items)):
+              x = (i % 2) * w
+              y = (i // 2) * (h + label_h)
+              sheet.paste(image, (x, y))
+              draw.rectangle((x, y + h, x + w, y + h + label_h), fill='black')
+              draw.text((x + 16, y + h + 13), label, fill='white')
+          sheet.save(root / '04-contact-sheet.jpg', quality=88, optimize=True)
+          PY
+
+      - name: Commit visual package
+        run: |
+          set -euo pipefail
+          git checkout -- src/main.js
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/visuals
+          git diff --cached --quiet && { echo 'No visual changes'; exit 0; }
+          git commit -m 'Add presentation visual package'
+          git push
