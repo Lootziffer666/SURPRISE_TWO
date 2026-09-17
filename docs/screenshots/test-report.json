@@ -1,0 +1,21 @@
+{
+  "testedAt": "2026-09-17T02:01:00.909Z",
+  "url": "http://127.0.0.1:4173/",
+  "title": "Snowbound — A little winter adventure",
+  "canvasCount": 1,
+  "width": 1365,
+  "height": 768,
+  "webgl": true,
+  "interactions": [
+    "W key",
+    "click"
+  ],
+  "consoleErrors": [],
+  "consoleWarnings": [
+    "[.WebGL-0x3684000eb100]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[.WebGL-0x3684000eb100]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[.WebGL-0x3684000eb100]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[.WebGL-0x3684000eb100]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
+  ],
+  "status": "rendered-without-runtime-errors"
+}
