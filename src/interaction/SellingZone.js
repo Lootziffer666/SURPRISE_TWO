@@ -13,7 +13,7 @@ export class SellingZone {
    * @param {object} state
    * @param {SellingZoneOptions} [options]
    */
-  constructor(inventory, state, { interval = 0.18, prices = { wood: 5, cookedMeat: 10 }, onSale } = {}) {
+  constructor(inventory, state, { interval = 0.18, prices = { wood: 5, cookedMeat: 10 }, onSale = () => {} } = {}) {
     if (!Number.isFinite(interval) || interval <= 0) throw new RangeError('Interval must be finite and positive');
     if (typeof onSale !== 'function') throw new TypeError('onSale must be a function');
     this.inventory = inventory;
