@@ -1,0 +1,27 @@
+{
+  "testedAt": "2026-09-17T02:08:54.441Z",
+  "states": {
+    "00-title-hero.png": "Branded starting view with quest and outpost HUD",
+    "01-gameplay.png": "Actual ResourceManager collection plus player movement",
+    "02-ui-menu.png": "Built-in help / controls panel",
+    "03-special-mechanic.png": "The $200 north-gate expansion unlocked through MapManager and entered"
+  },
+  "state": {
+    "title": "Snowbound — A little winter adventure",
+    "cash": 0,
+    "expansionUnlocked": true,
+    "inventory": {
+      "wood": 1,
+      "rawMeat": 1,
+      "cookedMeat": 0
+    },
+    "location": "Frostwater pond"
+  },
+  "consoleErrors": [],
+  "consoleWarnings": [
+    "[.WebGL-0x3794000eb100]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[.WebGL-0x3794000eb100]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[.WebGL-0x3794000eb100]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[.WebGL-0x3794000eb100]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
+  ]
+}
